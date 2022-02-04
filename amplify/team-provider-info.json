@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-epsgame-dev-150722-authRole",
+      "UnauthRoleArn": "arn:aws:iam::212142579857:role/amplify-epsgame-dev-150722-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::212142579857:role/amplify-epsgame-dev-150722-authRole",
+      "Region": "ap-northeast-1",
+      "DeploymentBucketName": "amplify-epsgame-dev-150722-deployment",
+      "UnauthRoleName": "amplify-epsgame-dev-150722-unauthRole",
+      "StackName": "amplify-epsgame-dev-150722",
+      "StackId": "arn:aws:cloudformation:ap-northeast-1:212142579857:stack/amplify-epsgame-dev-150722/ba9d93c0-8580-11ec-b439-0a8ae6b81257",
+      "AmplifyAppId": "d3kx2kr775yfuc"
+    }
+  }
+}
