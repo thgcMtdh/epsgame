@@ -9,11 +9,10 @@ export default function ChartV(props) {
   return (
     <React.Fragment>
       <Typography component="h2" variant="h6" color="primary">電圧</Typography>
-      <ResponsiveContainer width="100%" height={150}>
+      <ResponsiveContainer width="100%" height={100}>
       <ScatterChart width={400} height={200} margin={{top:16, right:8, bottom:0, left: 0}}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" dataKey="time" height={20} />
-          <YAxis type="number" dataKey="V" domain={[90, 110]} width={30} />
+          <XAxis type="number" dataKey="time" height={1} />
+          <YAxis type="number" dataKey="V" domain={[90, 110]} width={1} />
           <ZAxis type="number" dataKey="z" range={[0, 100]} />
 
           {/* 電圧範囲 */}

@@ -28,7 +28,8 @@ export default function ChartPQ(props) {
           <Scatter name="実際に届けた電力"
             data={props.result}
             fill={theme.palette.primary.main}
-            line={{stroke: theme.palette.primary.main, strokeWidth: 2}} />
+            line={{stroke: theme.palette.primary.main, strokeWidth: 2}}
+            isAnimationActive={false} />
 
         </ScatterChart>
       </ResponsiveContainer>  
