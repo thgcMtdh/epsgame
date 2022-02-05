@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import ChartPQ from './ChartPQ';
 import ChartV from './ChartV';
+import Generator from './Generator';
 import { demandTarget, voltageRangeLower, voltageRangeUpper} from './Data';
 import './App.css';
 
@@ -83,6 +84,7 @@ export default function App() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper className={classes.paper}>
+                <Generator />
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>
