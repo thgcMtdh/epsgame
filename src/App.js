@@ -1,36 +1,26 @@
 import { createTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { orange, red } from '@material-ui/core/colors';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Chip from '@material-ui/core/Chip';
-import Typography from '@material-ui/core/Typography';
 import ChartPQ from './ChartPQ';
 import ChartV from './ChartV';
+import { demandTarget, voltageRangeLower, voltageRangeUpper} from './Data';
 import './App.css';
 
-const demandData = [
-  {time: 0, demandP: 100, actualP: 90, demandQ: 20},
-  {time: 1, demandP: 110, actualP: 100, demandQ: 20},
-  {time: 2, demandP: 130, actualP: 120, demandQ: 25},
-  {time: 3, demandP: 135, actualP: 125, demandQ: 26},
-  {time: 4},
-  {time: 5},
-  {time: 6},
-  {time: 7}
+const voltageResult = [
+  {time: 0, V: 101},
+  {time: 1, V: 102},
+  {time: 2, V: 101},
+  {time: 3, V: 101}
 ];
 
-const voltageData = [
-  {time: 0, rangeV: [95, 107], actualV: 102},
-  {time: 1, rangeV: [95, 107], actualV: 103},
-  {time: 2, rangeV: [95, 107], actualV: 102},
-  {time: 3, rangeV: [95, 107], actualV: 102},
-  {time: 4, rangeV: [95, 107]},
-  {time: 5, rangeV: [95, 107]},
-  {time: 6, rangeV: [95, 107]},
-  {time: 7, rangeV: [95, 107]}
-];
+const demandResult = [
+  {time: 0, P: 6.2420, Q: -0.9484},
+  {time: 1, P: 6.0160, Q: -1.0226},
+  {time: 2, P: 5.9420, Q: -1.0470},
+  {time: 3, P: 5.9280, Q: -1.0516}
+]
 
 const theme = createTheme({
   palette: {
@@ -79,7 +69,7 @@ export default function App() {
           <Grid container spacing={1}>
             <Grid item xs={12}>
               <Paper className={classes.fixedHeightPaper}>
-                <ChartPQ data={demandData}/>
+                <ChartPQ target={demandTarget} result={demandResult}/>
               </Paper>
             </Grid>
             <Grid item xs={6}>
@@ -88,7 +78,7 @@ export default function App() {
             </Grid>
             <Grid item xs={6}>
               <Paper className={classes.fixedHeightPaper}>
-                <ChartV data={voltageData}/>
+                <ChartV rangeLower={voltageRangeLower} rangeUpper={voltageRangeUpper} result={voltageResult}/>
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>
