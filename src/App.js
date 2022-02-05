@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
   },
-  fixedHeightPaper: {
+  paper: {
     padding: theme.spacing(2),
     display: 'flex',
     overflow: 'auto',
@@ -68,25 +68,25 @@ export default function App() {
         <Container maxWidth="lg">
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <Paper className={classes.fixedHeightPaper}>
+              <Paper className={classes.paper}>
                 <ChartPQ target={demandTarget} result={demandResult}/>
               </Paper>
             </Grid>
             <Grid item xs={6}>
-              <Paper className={classes.fixedHeightPaper}>
+              <Paper className={classes.paper}>
               </Paper>
             </Grid>
             <Grid item xs={6}>
-              <Paper className={classes.fixedHeightPaper}>
+              <Paper className={classes.paper}>
                 <ChartV rangeLower={voltageRangeLower} rangeUpper={voltageRangeUpper} result={voltageResult}/>
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Paper className={classes.fixedHeightPaper}>
+              <Paper className={classes.paper}>
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Paper className={classes.fixedHeightPaper}>
+              <Paper className={classes.paper}>
               </Paper>
             </Grid>
           </Grid>
