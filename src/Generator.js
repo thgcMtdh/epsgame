@@ -10,16 +10,16 @@ const zoom = 0.6
 
 /**
  * Stageに描画する矢印の座標をフェーザから計算する
- * @param {Complex} phasor 複素フェーザ
+ * @param {number[]} phasor 複素フェーザ. [実部, 虚部]というArrayで渡す
  * @param {number} stageWidth 描画領域の幅
- * @param {Complex} start 矢印の始点を表す複素フェーザ. 与えられなかった場合は0から始まる
+ * @param {number[]} start 矢印の始点を表す複素フェーザ. 与えられなかった場合は[0,0]を原点とする
  */
-function phasorToArrow(phasor, stageWidth, start={re:0, im:0}) {
+function phasorToArrow(phasor, stageWidth, start=[0, 0]) {
 	return [
-		start.re * zoom * stageWidth,
-		start.im * zoom * stageWidth,
-		(phasor.re - start.re) * zoom * stageWidth,
-		- (phasor.im - start.im) * zoom * stageWidth
+		start[0] * zoom * stageWidth,
+		start[1] * zoom * stageWidth,
+		(phasor[0] - start[0]) * zoom * stageWidth,
+		- (phasor[1] - start[1]) * zoom * stageWidth
 	]
 }
 
@@ -27,18 +27,17 @@ function phasorToArrow(phasor, stageWidth, start={re:0, im:0}) {
  * フェーザをStage上に描画されている矢印の座標から計算する
  * @param {number[]} arrowPoints 矢印の座標. [始点x, 始点y, 終点x, 終点y]
  * @param {number} stageWidth 描画領域の幅
- * @return {[Complex, Complex]} フェーザ phasor と、始点 start をこの順に返す
+ * @return {number[][]} フェーザ phasor と、始点 start をこの順に返す. いずれも[実部,虚部]というArray
  */
 function arrowToPhasor(arrowPoints, stageWidth) {
 	return [
-		new Complex(
+		[
 			(arrowPoints[2] - arrowPoints[0]) / zoom / stageWidth,
 			- (arrowPoints[3] - arrowPoints[1]) / zoom / stageWidth
-		),
-		new Complex(
+		],[
 			arrowPoints[0] / zoom / stageWidth,
 			- arrowPoints[1] / zoom / stageWidth
-		)
+		]
 	]
 }
 
@@ -88,7 +87,7 @@ export default function Generator(props) {
 						<Arrow
 							x={0}
 							y={stageHeight/2}
-							points={phasorToArrow(Complex.csub(new Complex(0,0), props.demI), stageWidth)}
+							points={phasorToArrow([-props.demI[0], -props.demI[1]], stageWidth)}
 							fill="black"
 							stroke="black"
 							strokeWidth={2}

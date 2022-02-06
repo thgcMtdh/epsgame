@@ -38,14 +38,14 @@ export const voltageRangeUpper = [
   {time: 24, V: 107}
 ];
 
-// export const admitances = [
-//   [{re: 0, im: 1.54818},         {re: 0.011725, im: -0.29571}, {re:0, im: 0}],
-//   [{re: 0.011725, im: -0.29571}, {re: 0, im: 0.56065},         {re:0.047245, im: -0.65667}],
-//   [{re: 0, im: 0},               {re:0.047245, im: -0.65667},  {re:0, im: 0}]
-// ]
+export const defaultAdmitancesRe = [
+  [0,      1.1725, 0],
+  [1.1725, 0,      4.7245],
+  [0,      4.7245, 0]
+];
 
-export const admitances = [
-  [{re: 0, im: 0.0},       {re: 1.1725, im: -29.571},  {re:0, im: 0}],
-  [{re: 1.1725, im: -29.571}, {re: 0, im: 0.0},        {re: 4.7245, im: -65.667}],
-  [{re: 0, im: 0},            {re: 4.7245, im: -65.667},  {re:0, im: 0.0}]
-]
+export const defaultAdmitancesIm = [
+  [  0,     -29.571,   0],
+  [-29.571,   0,     -65.667],
+  [  0,     -65.667,   0]
+];

@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { createTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import { dotDivide, dotMultiply, matrix, ones } from 'mathjs';
 import ChartPQ from './ChartPQ';
 import ChartV from './ChartV';
 import Generator from './Generator';
-import { demandTarget, voltageRangeLower, voltageRangeUpper, admitances} from './Data';
-import Complex from './Complex';
+import { demandTarget, voltageRangeLower, voltageRangeUpper, defaultAdmitancesRe, defaultAdmitancesIm } from './Data';
 import { flow, calcYMatrix, flowDemandUnknown } from './Flow';
 import './App.css';
 
@@ -49,20 +49,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const sqrt3 = new Complex(Math.sqrt(1.7320508), 0);
+const sqrt3 = Math.sqrt(3);
 
 export default function App() {
   const classes = useStyles();
   
   const Vbase = 154000;  // 基準線間電圧[V]
   const Pbase = 100000 * 1000;  // 基準三相電力[W]
-  const Y = calcYMatrix(admitances);  // Y行列
+  const [admitances, setAdmitances] = useState({re: dotDivide(defaultAdmitancesRe, 2), im: dotDivide(defaultAdmitancesIm, 2)});  // 系統各部のアドミタンス[pu]
   const [time, setTime] = useState(3);  // 現在時刻[h]
-  const [genV, setGenV] = useState(new Complex(1.05, 0.2));  // 発電機電圧 [pu]
-  const [ssV, setSsV] = useState(new Complex(1.04, 0));    // 変電所2次側電圧 [pu]
-  const [demV, setDemV] = useState(new Complex(1.01, 0));  // 需要家電圧 [pu]
-  const [genI, setGenI] = useState(new Complex(0, 0));     // 発電機電流 [pu]
-  const [demI, setDemI] = useState(new Complex(0, 0));     // 需要電流 [pu]
+  const [genV, setGenV] = useState([1.05, 0]);  // 発電機電圧 [pu]
+  const [ssV, setSsV] = useState([1.04, 0]);    // 変電所2次側電圧 [pu]
+  const [demV, setDemV] = useState([1.01, 0]);  // 需要家電圧 [pu]
+  const [genI, setGenI] = useState([0, 0]);     // 発電機電流 [pu]
+  const [ssI, setSSI] = useState([0, 0]);       // 変電所電流[pu]
+  const [demI, setDemI] = useState([0, 0]);     // 需要電流 [pu]
 
   const [voltageResult, setVoltageResult] = useState([  // 需要家端で測定した電圧実績
     {time: 0, V: 101},
@@ -77,21 +78,29 @@ export default function App() {
     {time: 3, P: 5.9280, Q: -1.0516}
   ]);
 
+  // アドミタンスが更新されたときに限りY行列の再計算を実行
+  useEffect(() => {
+    calcYMatrix(admitances.re, admitances.im);  // Y行列
+    console.log('admitance calculated');
+  }, [admitances]);
+
   // 発電機電圧がドラッグ等で変更された時に、各種の値を更新する処理
   const changeGenV = (genV) => {
     setGenV(genV);
-    const [I0, V1, I2] = flowDemandUnknown(genV, demV, Y);
-    console.log(I0, I2);
-    setGenI(Complex.cdiv(I0, sqrt3));
+    const [I0, V1, I2] = flowDemandUnknown(genV, ssI, demV);
+    setGenI(dotDivide(I0, sqrt3));
     setSsV(V1);
-    setDemI(Complex.cdiv(I2, sqrt3));
-    const S = Complex.cmul(demV, Complex.cconj(demI));
+    setDemI(dotDivide(I2, sqrt3));
+    const S = [ // 電力=V*conj(I)
+      sqrt3 * (demV[0]*demI[0] + demV[1]*demI[1]),
+      sqrt3 * (demV[1]*demI[0] - demV[0]*demI[1])
+    ];
     setDemandResult(() => {
       let newDemandResult = demandResult;
-      demandResult[3].P = - sqrt3.re * S.re * Pbase * 1e-7;
-      demandResult[3].Q = - sqrt3.re * S.im * Pbase * 1e-7;
+      newDemandResult[3].P = - S[0] * Pbase * 1e-7;
+      newDemandResult[3].Q = - S[1] * Pbase * 1e-7;
       return newDemandResult;
-    })
+    });
   }
 
   return (
