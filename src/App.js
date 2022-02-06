@@ -1,3 +1,4 @@
+import React, {useState} from 'react';
 import { createTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -7,6 +8,7 @@ import ChartPQ from './ChartPQ';
 import ChartV from './ChartV';
 import Generator from './Generator';
 import { demandTarget, voltageRangeLower, voltageRangeUpper} from './Data';
+import Complex from './Complex';
 import './App.css';
 
 const voltageResult = [
@@ -62,6 +64,23 @@ const useStyles = makeStyles((theme) => ({
 
 export default function App() {
   const classes = useStyles();
+  
+  const Vbase = 66000;  // 基準線間電圧[V]
+  const Pbase = 100000 * 1000;  // 基準三相電力[W]
+  const [voltages, setVoltages] = useState([  // 各ノードの電圧 [pu] base = priary side nominal
+    new Complex(1.05, 0),  // ノード1
+    new Complex(1.04, 0),  // ノード2
+    new Complex(1.01, 0)  // ノード3
+  ]);  
+  const [genI, setGenI] = useState(new Complex(0, 0));  // 発電機電流 [pu]
+  const [demI, setDemI] = useState(new Complex(0, 0));  // 需要電流 [pu]
+
+  // 発電機電圧がドラッグ等で変更された時に、voltages[0]を更新する処理
+  const changeGenV = (genV) => {
+    const voltagesNew = [genV, voltages[1], voltages[2]];
+    setVoltages(voltagesNew);
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <div>
@@ -84,7 +103,7 @@ export default function App() {
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper className={classes.paper}>
-                <Generator />
+                <Generator genV={voltages[0]} demV={voltages[2]} genI={genI} demI={demI} onChange={changeGenV}/>
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>

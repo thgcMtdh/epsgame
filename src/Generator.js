@@ -3,6 +3,44 @@ import { useTheme } from "@material-ui/core";
 import { Typography } from '@material-ui/core';
 import { Container } from '@material-ui/core';
 import { Stage, Layer, Line, Arrow, Circle } from 'react-konva';
+import Complex from './Complex';
+
+// 1puのフェーザが、描画領域の幅に対して何倍の大きさで映るか. 小さいほど広い範囲が映る
+const zoom = 0.6
+
+/**
+ * Stageに描画する矢印の座標をフェーザから計算する
+ * @param {Complex} phasor 複素フェーザ
+ * @param {number} stageWidth 描画領域の幅
+ * @param {Complex} start 矢印の始点を表す複素フェーザ. 与えられなかった場合は0から始まる
+ */
+function phasorToArrow(phasor, stageWidth, start={re:0, im:0}) {
+	return [
+		start.re * zoom * stageWidth,
+		start.im * zoom * stageWidth,
+		(start.re + phasor.re) * zoom * stageWidth,
+		(start.im + phasor.im) * zoom * stageWidth
+	]
+}
+
+/**
+ * フェーザをStage上に描画されている矢印の座標から計算する
+ * @param {number[]} arrowPoints 矢印の座標. [始点x, 始点y, 終点x, 終点y]
+ * @param {number} stageWidth 描画領域の幅
+ * @return {[Complex, Complex]} フェーザ phasor と、始点 start をこの順に返す
+ */
+function arrowToPhasor(arrowPoints, stageWidth) {
+	return [
+		new Complex(
+			(arrowPoints[2] - arrowPoints[0]) / zoom / stageWidth,
+			(arrowPoints[3] - arrowPoints[1]) / zoom / stageWidth
+		),
+		new Complex(
+			arrowPoints[0] / zoom / stageWidth,
+			arrowPoints[1] / zoom / stageWidth
+		)
+	]
+}
 
 export default function Generator(props) {
 	const theme = useTheme();
@@ -20,7 +58,8 @@ export default function Generator(props) {
 	}, []);
 
 	const [isDragging, setIsDragging] = useState(false);  // 発電機電圧フェーザをドラッグ中にtrueになる
-	// const [voltagePhasorPos, setVoltagePhasorPos] = useState([stageWidth/2, stageHeight/2]);
+
+	const genVArrowPoints = phasorToArrow(props.genV, stageWidth);
 
   return (
 		<React.Fragment>
@@ -49,7 +88,7 @@ export default function Generator(props) {
 						<Arrow
 							x={0}
 							y={stageHeight/2}
-							points={[0, 0, stageWidth/3, 0]}
+							points={phasorToArrow(props.genI, stageWidth)}
 							fill="black"
 							stroke="black"
 							strokeWidth={2}
@@ -58,7 +97,7 @@ export default function Generator(props) {
 						<Arrow
 							x={0}
 							y={stageHeight/2}
-							points={[0, 0, stageWidth/2, 0]}
+							points={phasorToArrow(props.demV, stageWidth)}
 							fill="black"
 							stroke="black"
 							strokeWidth={2}
@@ -67,15 +106,15 @@ export default function Generator(props) {
 						<Arrow
 							x={0}
 							y={stageHeight/2}
-							points={[0, 0, 100, 0]}
+							points={genVArrowPoints}
 							fill={theme.palette.primary.main}
 							stroke={theme.palette.primary.main}
 							strokeWidth={2}
 						/>
 						{/* 発電機電圧をつかんで動かすための持ち手 */}
-						{/* <Circle
-							x={voltagePhasorPos[0]}
-							y={voltagePhasorPos[1]}
+						<Circle
+							x={genVArrowPoints[2]}
+							y={genVArrowPoints[3] + stageHeight * 0.5}
 							radius={isDragging ? 12 : 10}
 							fill={isDragging ? "#888888" : "#999999"}
 							opacity={0.5}
@@ -88,14 +127,14 @@ export default function Generator(props) {
 								let y = e.target.y();
 								if (x < 0) { x = 0; }
 								if (x > stageWidth) { x = stageWidth; }
-								if (y < - stageHeight / 2) { y = - stageHeight / 2;}
-								if (y > stageHeight / 2) { y = stageHeight / 2;}
-								setVoltagePhasorPos([x, y]);
+								if (y < 0) { y = 0;}
+								if (y > stageHeight) { y = stageHeight;}
+								props.onChange(arrowToPhasor([0, 0, x, y - stageHeight/2], stageWidth)[0]);
 							}}
 							onDragEnd={() => {
 								setIsDragging(false);
 							}}
-						/> */}
+						/>
 					</Layer>
 				</Stage>
 			</Container>
