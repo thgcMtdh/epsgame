@@ -18,8 +18,8 @@ function phasorToArrow(phasor, stageWidth, start={re:0, im:0}) {
 	return [
 		start.re * zoom * stageWidth,
 		start.im * zoom * stageWidth,
-		(start.re + phasor.re) * zoom * stageWidth,
-		(start.im + phasor.im) * zoom * stageWidth
+		(phasor.re - start.re) * zoom * stageWidth,
+		- (phasor.im - start.im) * zoom * stageWidth
 	]
 }
 
@@ -33,11 +33,11 @@ function arrowToPhasor(arrowPoints, stageWidth) {
 	return [
 		new Complex(
 			(arrowPoints[2] - arrowPoints[0]) / zoom / stageWidth,
-			(arrowPoints[3] - arrowPoints[1]) / zoom / stageWidth
+			- (arrowPoints[3] - arrowPoints[1]) / zoom / stageWidth
 		),
 		new Complex(
 			arrowPoints[0] / zoom / stageWidth,
-			arrowPoints[1] / zoom / stageWidth
+			- arrowPoints[1] / zoom / stageWidth
 		)
 	]
 }
@@ -84,11 +84,11 @@ export default function Generator(props) {
 							stroke="black"
 							strokeWidth={1}
 						/>
-						{/* 発電機電流 */}
+						{/* 負荷電流 */}
 						<Arrow
 							x={0}
 							y={stageHeight/2}
-							points={phasorToArrow(props.genI, stageWidth)}
+							points={phasorToArrow(Complex.csub(new Complex(0,0), props.demI), stageWidth)}
 							fill="black"
 							stroke="black"
 							strokeWidth={2}

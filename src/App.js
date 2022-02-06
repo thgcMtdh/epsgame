@@ -12,20 +12,6 @@ import Complex from './Complex';
 import { flow, calcYMatrix, flowDemandUnknown } from './Flow';
 import './App.css';
 
-const voltageResult = [
-  {time: 0, V: 101},
-  {time: 1, V: 102},
-  {time: 2, V: 101},
-  {time: 3, V: 101}
-];
-
-const demandResult = [
-  {time: 0, P: 6.2420, Q: -0.9484},
-  {time: 1, P: 6.0160, Q: -1.0226},
-  {time: 2, P: 5.9420, Q: -1.0470},
-  {time: 3, P: 5.9280, Q: -1.0516}
-]
-
 const theme = createTheme({
   palette: {
     primary: {
@@ -63,25 +49,49 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const sqrt3 = new Complex(Math.sqrt(1.7320508), 0);
+
 export default function App() {
   const classes = useStyles();
   
-  const Vbase = 66000;  // 基準線間電圧[V]
+  const Vbase = 154000;  // 基準線間電圧[V]
   const Pbase = 100000 * 1000;  // 基準三相電力[W]
   const Y = calcYMatrix(admitances);  // Y行列
+  const [time, setTime] = useState(3);  // 現在時刻[h]
   const [genV, setGenV] = useState(new Complex(1.05, 0.2));  // 発電機電圧 [pu]
   const [ssV, setSsV] = useState(new Complex(1.04, 0));    // 変電所2次側電圧 [pu]
   const [demV, setDemV] = useState(new Complex(1.01, 0));  // 需要家電圧 [pu]
   const [genI, setGenI] = useState(new Complex(0, 0));     // 発電機電流 [pu]
   const [demI, setDemI] = useState(new Complex(0, 0));     // 需要電流 [pu]
 
-  // 発電機電圧がドラッグ等で変更された時に、voltages[0]を更新する処理
+  const [voltageResult, setVoltageResult] = useState([  // 需要家端で測定した電圧実績
+    {time: 0, V: 101},
+    {time: 1, V: 102},
+    {time: 2, V: 101},
+    {time: 3, V: 101}
+  ]);
+  const [demandResult, setDemandResult] = useState([  // 実際に届けた電力実績
+    {time: 0, P: 6.2420, Q: -0.9484},
+    {time: 1, P: 6.0160, Q: -1.0226},
+    {time: 2, P: 5.9420, Q: -1.0470},
+    {time: 3, P: 5.9280, Q: -1.0516}
+  ]);
+
+  // 発電機電圧がドラッグ等で変更された時に、各種の値を更新する処理
   const changeGenV = (genV) => {
     setGenV(genV);
     const [I0, V1, I2] = flowDemandUnknown(genV, demV, Y);
-    setGenI(I0);
+    console.log(I0, I2);
+    setGenI(Complex.cdiv(I0, sqrt3));
     setSsV(V1);
-    setDemI(I2);
+    setDemI(Complex.cdiv(I2, sqrt3));
+    const S = Complex.cmul(demV, Complex.cconj(demI));
+    setDemandResult(() => {
+      let newDemandResult = demandResult;
+      demandResult[3].P = - sqrt3.re * S.re * Pbase * 1e-7;
+      demandResult[3].Q = - sqrt3.re * S.im * Pbase * 1e-7;
+      return newDemandResult;
+    })
   }
 
   return (

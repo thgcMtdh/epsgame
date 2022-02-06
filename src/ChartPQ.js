@@ -9,12 +9,11 @@ export default function ChartPQ(props) {
   return (
     <React.Fragment>
       <Typography component="h2" variant="h6" color="primary">電力需要 [万kW]</Typography>
-
       <ResponsiveContainer width="100%" height={200}>
         <ScatterChart width={400} height={200} margin={{top:16, right:8, bottom:0, left: 0}}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" dataKey="time" height={20} />
-          <YAxis type="number" dataKey="P" width={25} />
+          <YAxis type="number" dataKey="P" domain={[0, 12]} width={25} />
           <ZAxis type="number" dataKey="z" range={[20, 100]} />
           <Legend />
 

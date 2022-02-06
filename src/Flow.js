@@ -32,7 +32,7 @@ export function calcYMatrix (admitances) {
 export function flowDemandUnknown (V0, V2, Y) {
   const I1 = new Complex(0,0);
   const V1 = Complex.cdiv(Complex.csub(I1, Complex.cadd(Complex.cmul(Y[1][0], V0), Complex.cmul(Y[1][2], V2))), Y[1][1]);
-  const I0 = Complex.cadd(Complex.cmul(Y[0][0], V0), Complex.cadd(Complex.cmul(Y[0][1], V1), Y[0][2], V2));
-  const I2 = Complex.cadd(Complex.cmul(Y[2][0], V0), Complex.cadd(Complex.cmul(Y[2][1], V1), Y[2][2], V2));
+  const I0 = Complex.cadd(Complex.cmul(Y[0][0], V0), Complex.cadd(Complex.cmul(Y[0][1], V1), Complex.cmul(Y[0][2], V2)));
+  const I2 = Complex.cadd(Complex.cmul(Y[2][0], V0), Complex.cadd(Complex.cmul(Y[2][1], V1), Complex.cmul(Y[2][2], V2)));
   return [I0, V1, I2];
 }
