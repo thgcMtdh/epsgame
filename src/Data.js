@@ -1,3 +1,5 @@
+import Complex from "./Complex";
+
 export const demandTarget = [
   {time: 0, P: 6.2420, Q: -0.9484},
   {time: 1, P: 6.0160, Q: -1.0226},
@@ -35,3 +37,9 @@ export const voltageRangeUpper = [
   {time: 0, V: 107},
   {time: 24, V: 107}
 ];
+
+export const admitances = [
+  [{re: 0, im: 1.54818},         {re: 0.011725, im: -0.29571}, {re:0, im: 0}],
+  [{re: 0.011725, im: -0.29571}, {re: 0, im: 0.56065},         {re:0.047245, im: -0.65667}],
+  [{re: 0, im: 0},               {re:0.047245, im: -0.65667},  {re:0, im: 0}]
+]
